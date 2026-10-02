@@ -14,10 +14,10 @@ interface AnimateInProps {
 }
 
 const offsets: Record<Direction, { x?: number; y?: number }> = {
-  up: { y: 40 },
-  down: { y: -40 },
-  left: { x: -40 },
-  right: { x: 40 },
+  up: { y: 30 },
+  down: { y: -30 },
+  left: { x: -30 },
+  right: { x: 30 },
   none: {},
 };
 
@@ -25,9 +25,9 @@ export function AnimateIn({
   children,
   className,
   delay = 0,
-  duration = 0.65,
+  duration = 0.6,
   direction = "up",
-  threshold = 0.12,
+  threshold = 0.01,
 }: AnimateInProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: threshold });
@@ -51,3 +51,4 @@ export function AnimateIn({
     </motion.div>
   );
 }
+

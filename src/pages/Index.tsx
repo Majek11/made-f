@@ -88,6 +88,45 @@ const DEFAULTS: Record<string, string> = {
   home_cta_btn2: "Learn More",
 };
 
+const DEFAULT_NEWS_ITEMS: NewsItem[] = [
+  {
+    id: "default-1",
+    title: "Empowering Local Journalists through Data-Driven Development Reporting",
+    slug: "empowering-local-journalists",
+    type: "Blogs",
+    excerpt: "MADE Foundation launches a new training series focused on equipping community reporters with modern data tools and investigative techniques.",
+    content: "",
+    image_url: focusJournalismImg,
+    published: true,
+    published_at: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "default-2",
+    title: "MADE Foundation Hosts Policy Dialogue on Gender and Social Inclusion",
+    slug: "policy-dialogue-gender-inclusion",
+    type: "Press Releases",
+    excerpt: "Bringing together policymakers, researchers, and civil society leaders to discuss actionable strategies for inclusive development.",
+    content: "",
+    image_url: focusMediaImg,
+    published: true,
+    published_at: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "default-3",
+    title: "Youth Digital Leadership Workshop Kicks Off in Lagos",
+    slug: "youth-digital-leadership-workshop",
+    type: "Blogs",
+    excerpt: "Over 100 young communicators gather for a three-day intensive workshop on digital storytelling and public advocacy.",
+    content: "",
+    image_url: focusDataImg,
+    published: true,
+    published_at: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+  },
+];
+
 const Index = () => {
   const [cfg, setCfg] = useState<Record<string, string>>(DEFAULTS);
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
@@ -103,14 +142,17 @@ const Index = () => {
           data.forEach((r) => { if (r.value) map[r.key] = r.value; });
           setCfg(map);
         }
-      });
+      })
+      .catch((err) => console.warn("Supabase fetch site_settings error:", err));
+
     supabase
       .from("news_items")
       .select("*")
       .eq("published", true)
       .order("published_at", { ascending: false })
       .limit(3)
-      .then(({ data }) => { if (data) setNewsItems(data as NewsItem[]); });
+      .then(({ data }) => { if (data && data.length > 0) setNewsItems(data as NewsItem[]); })
+      .catch((err) => console.warn("Supabase fetch news_items error:", err));
   }, []);
 
   const g = (key: string) => cfg[key] ?? DEFAULTS[key] ?? "";
@@ -128,6 +170,8 @@ const Index = () => {
     title: g(`value_${n}_title`),
     desc: g(`value_${n}_desc`),
   }));
+
+  const activeNewsItems = newsItems.length > 0 ? newsItems : DEFAULT_NEWS_ITEMS;
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -341,121 +385,119 @@ const Index = () => {
       </section>
 
       {/* ── Latest News ────────────────────────────────────────── */}
-      {newsItems.length > 0 && (
-        <section className="py-24 bg-cream-dark">
-          <div className="container mx-auto">
-            <AnimateIn direction="up" className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
-              <div>
-                <span className="section-tag mb-4">Newsroom</span>
-                <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mt-4 leading-tight">
-                  Latest <em className="text-italic-accent">stories</em>
-                </h2>
-              </div>
-              <Link to="/newsroom/blogs" className="btn-outline inline-flex text-sm">
-                View All <ArrowRight size={14} />
-              </Link>
-            </AnimateIn>
+      <section className="py-24 bg-cream-dark">
+        <div className="container mx-auto">
+          <AnimateIn direction="up" className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+            <div>
+              <span className="section-tag mb-4">Newsroom</span>
+              <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mt-4 leading-tight">
+                Latest <em className="text-italic-accent">stories</em>
+              </h2>
+            </div>
+            <Link to="/newsroom/blogs" className="btn-outline inline-flex text-sm">
+              View All <ArrowRight size={14} />
+            </Link>
+          </AnimateIn>
 
-            <div className="grid lg:grid-cols-2 gap-8">
-              {/* Featured (first) article — large */}
-              {newsItems[0] && (
-                <AnimateIn direction="left" duration={700}>
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Featured (first) article — large */}
+            {activeNewsItems[0] && (
+              <AnimateIn direction="left" duration={700}>
+                <Link
+                  to={activeNewsItems[0].slug ? `/newsroom/blogs/${activeNewsItems[0].slug}` : `/newsroom/blogs`}
+                  className="group bg-card rounded-3xl border border-border shadow-card hover-lift overflow-hidden flex flex-col h-full"
+                >
+                  <div className="relative h-64 lg:h-80 overflow-hidden">
+                    {activeNewsItems[0].image_url ? (
+                      <img
+                        src={activeNewsItems[0].image_url}
+                        alt={activeNewsItems[0].title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                        <Newspaper size={48} className="text-primary/20" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-8">
+                      <span className="section-tag text-xs mb-3 inline-block">{activeNewsItems[0].type}</span>
+                      <h3 className="font-display text-2xl lg:text-3xl font-bold text-white leading-snug">
+                        {activeNewsItems[0].title}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="p-8 flex flex-col flex-1 gap-3">
+                    {activeNewsItems[0].excerpt && (
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                        {activeNewsItems[0].excerpt}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
+                      {activeNewsItems[0].published_at && (
+                        <span className="font-body text-xs text-muted-foreground">
+                          {new Date(activeNewsItems[0].published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1.5 text-primary font-semibold text-sm font-body group-hover:gap-3 transition-all">
+                        Read Article <ArrowRight size={14} />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </AnimateIn>
+            )}
+
+            {/* Secondary articles — stacked */}
+            <div className="flex flex-col gap-6">
+              {activeNewsItems.slice(1, 3).map((item, i) => (
+                <AnimateIn key={item.id} direction="right" delay={i * 100} duration={700}>
                   <Link
-                    to={newsItems[0].slug ? `/newsroom/blogs/${newsItems[0].slug}` : `/newsroom/blogs`}
-                    className="group bg-card rounded-3xl border border-border shadow-card hover-lift overflow-hidden flex flex-col h-full"
+                    to={item.slug ? `/newsroom/blogs/${item.slug}` : `/newsroom/blogs`}
+                    className="group bg-card rounded-2xl border border-border shadow-card hover-lift overflow-hidden flex flex-row h-full"
                   >
-                    <div className="relative h-64 lg:h-80 overflow-hidden">
-                      {newsItems[0].image_url ? (
+                    <div className="relative w-40 md:w-52 flex-shrink-0 overflow-hidden">
+                      {item.image_url ? (
                         <img
-                          src={newsItems[0].image_url}
-                          alt={newsItems[0].title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                          <Newspaper size={48} className="text-primary/20" />
+                        <div className="w-full h-full bg-primary/10 flex items-center justify-center min-h-[160px]">
+                          <Newspaper size={28} className="text-primary/20" />
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-8">
-                        <span className="section-tag text-xs mb-3 inline-block">{newsItems[0].type}</span>
-                        <h3 className="font-display text-2xl lg:text-3xl font-bold text-white leading-snug">
-                          {newsItems[0].title}
-                        </h3>
-                      </div>
+                      <div className="absolute inset-0 bg-primary/10" />
                     </div>
-                    <div className="p-8 flex flex-col flex-1 gap-3">
-                      {newsItems[0].excerpt && (
-                        <p className="font-body text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                          {newsItems[0].excerpt}
+                    <div className="p-6 flex flex-col justify-center gap-3 flex-1">
+                      <span className="font-body text-xs font-medium text-accent uppercase tracking-wider">{item.type}</span>
+                      <h3 className="font-display text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                        {item.title}
+                      </h3>
+                      {item.excerpt && (
+                        <p className="font-body text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                          {item.excerpt}
                         </p>
                       )}
-                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
-                        {newsItems[0].published_at && (
+                      <div className="flex items-center justify-between mt-auto">
+                        {item.published_at && (
                           <span className="font-body text-xs text-muted-foreground">
-                            {new Date(newsItems[0].published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                            {new Date(item.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                           </span>
                         )}
-                        <span className="flex items-center gap-1.5 text-primary font-semibold text-sm font-body group-hover:gap-3 transition-all">
-                          Read Article <ArrowRight size={14} />
+                        <span className="flex items-center gap-1 text-primary font-semibold text-xs font-body group-hover:gap-2 transition-all">
+                          Read <ArrowRight size={12} />
                         </span>
                       </div>
                     </div>
                   </Link>
                 </AnimateIn>
-              )}
-
-              {/* Secondary articles — stacked */}
-              <div className="flex flex-col gap-6">
-                {newsItems.slice(1, 3).map((item, i) => (
-                  <AnimateIn key={item.id} direction="right" delay={i * 100} duration={700}>
-                    <Link
-                      to={item.slug ? `/newsroom/blogs/${item.slug}` : `/newsroom/blogs`}
-                      className="group bg-card rounded-2xl border border-border shadow-card hover-lift overflow-hidden flex flex-row h-full"
-                    >
-                      <div className="relative w-40 md:w-52 flex-shrink-0 overflow-hidden">
-                        {item.image_url ? (
-                          <img
-                            src={item.image_url}
-                            alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-primary/10 flex items-center justify-center min-h-[160px]">
-                            <Newspaper size={28} className="text-primary/20" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-primary/10" />
-                      </div>
-                      <div className="p-6 flex flex-col justify-center gap-3 flex-1">
-                        <span className="font-body text-xs font-medium text-accent uppercase tracking-wider">{item.type}</span>
-                        <h3 className="font-display text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                          {item.title}
-                        </h3>
-                        {item.excerpt && (
-                          <p className="font-body text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                            {item.excerpt}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between mt-auto">
-                          {item.published_at && (
-                            <span className="font-body text-xs text-muted-foreground">
-                              {new Date(item.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                            </span>
-                          )}
-                          <span className="flex items-center gap-1 text-primary font-semibold text-xs font-body group-hover:gap-2 transition-all">
-                            Read <ArrowRight size={12} />
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </AnimateIn>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       <PartnersCarousel />
 
@@ -497,3 +539,4 @@ const Index = () => {
 };
 
 export default Index;
+
