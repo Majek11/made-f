@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, ArrowRight, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,7 +58,6 @@ const MegaMenuDropdown = ({ items, images, isOpen }: MegaMenuProps) => {
       style={{ zIndex: 100 }}
     >
       <div className="flex">
-        {/* Links column */}
         <div className="flex-1 p-6">
           <ul className="space-y-1">
             {items.map((item) => (
@@ -72,8 +72,6 @@ const MegaMenuDropdown = ({ items, images, isOpen }: MegaMenuProps) => {
             ))}
           </ul>
         </div>
-
-        {/* Images column */}
         <div className="w-56 p-4 flex flex-col gap-3 bg-muted/30">
           {images.map((img, i) => (
             <div key={i} className="rounded-lg overflow-hidden flex-1 min-h-[100px]">
@@ -86,32 +84,165 @@ const MegaMenuDropdown = ({ items, images, isOpen }: MegaMenuProps) => {
   );
 };
 
-const mobileMenuVariants = {
-  hidden: {
-    opacity: 0,
-    y: -10,
-    transition: {
-      duration: 0.15,
-      ease: "easeInOut",
-      staggerChildren: 0.02,
-      staggerDirection: -1,
-    },
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.25,
-      ease: "easeOut",
-      staggerChildren: 0.04,
-      delayChildren: 0.05,
-    },
-  },
-};
+// Mobile Menu rendered as a Portal so it is never clipped by parent transforms/filters
+interface MobileMenuPortalProps {
+  menuOpen: boolean;
+  setMenuOpen: (v: boolean) => void;
+  mobileExpanded: string | null;
+  setMobileExpanded: (v: string | null) => void;
+  location: ReturnType<typeof useLocation>;
+}
 
-const mobileItemVariants = {
-  hidden: { opacity: 0, y: -8 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
+const MobileMenuPortal = ({
+  menuOpen,
+  setMenuOpen,
+  mobileExpanded,
+  setMobileExpanded,
+  location,
+}: MobileMenuPortalProps) => {
+  if (typeof document === "undefined") return null;
+
+  const toggle = (key: string) =>
+    setMobileExpanded(mobileExpanded === key ? null : key);
+
+  const AccordionSection = ({
+    id,
+    label,
+    items,
+  }: {
+    id: string;
+    label: string;
+    items: { label: string; href: string }[];
+  }) => (
+    <div className="border-b border-gray-200">
+      <button
+        type="button"
+        className="flex items-center justify-between w-full py-4 px-4 text-left"
+        onClick={() => toggle(id)}
+      >
+        <span
+          className={`font-semibold text-base ${
+            mobileExpanded === id ? "text-yellow-600" : "text-gray-900"
+          }`}
+        >
+          {label}
+        </span>
+        <ChevronDown
+          size={18}
+          className={`transition-transform duration-200 text-gray-500 ${
+            mobileExpanded === id ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      {mobileExpanded === id && (
+        <div className="pb-2 pl-4 pr-4 flex flex-col gap-1 border-l-2 border-yellow-400 ml-4 mb-2">
+          {items.map((item) => (
+            <Link
+              key={item.label}
+              to={item.href}
+              className={`block py-2.5 px-3 rounded-lg text-sm transition-colors ${
+                location.pathname === item.href
+                  ? "bg-yellow-50 text-yellow-700 font-semibold"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  return createPortal(
+    <AnimatePresence>
+      {menuOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            key="mobile-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={() => setMenuOpen(false)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              top: 72,
+              backgroundColor: "rgba(0,0,0,0.55)",
+              zIndex: 9998,
+            }}
+          />
+
+          {/* Menu panel */}
+          <motion.div
+            key="mobile-panel"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              position: "fixed",
+              top: 72,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 9999,
+              backgroundColor: "#faf9f7",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {/* Nav links */}
+            <div className="flex-1 px-4 py-2">
+              <AccordionSection id="about" label="About Us" items={ABOUT_ITEMS} />
+              <AccordionSection id="programmes" label="Programmes" items={PROGRAMMES_ITEMS} />
+              <AccordionSection id="newsroom" label="Newsroom" items={NEWSROOM_ITEMS} />
+
+              {SIMPLE_NAV_LINKS.map((link) => (
+                <div key={link.label} className="border-b border-gray-200">
+                  <Link
+                    to={link.href}
+                    className={`block py-4 px-4 font-semibold text-base transition-colors ${
+                      location.pathname === link.href
+                        ? "text-yellow-600"
+                        : "text-gray-900 hover:text-yellow-600"
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA section */}
+            <div className="px-4 pt-4 pb-10 border-t border-gray-200 bg-gray-50">
+              <p className="text-xs font-semibold text-yellow-600 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                <Sparkles size={12} /> MADE Foundation
+              </p>
+              <p className="text-xs text-gray-500 mb-4">
+                Empowering Voices, Transforming Communities
+              </p>
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="btn-gold w-full flex items-center justify-center gap-2 py-3.5 text-base font-semibold"
+              >
+                Get Involved
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
 };
 
 const Navbar = () => {
@@ -141,11 +272,11 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close on outside click
+  // Close desktop dropdowns on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
@@ -165,408 +296,183 @@ const Navbar = () => {
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
   const isTransparent = isHome && !isScrolled && !activeMenu && !menuOpen;
-
-  const handleMenuEnter = (key: MegaMenuKey) => setActiveMenu(key);
-  const handleMenuLeave = () => setActiveMenu(null);
 
   const navTextClass = isTransparent ? "text-white/90" : "text-foreground/80";
   const chevronClass = isTransparent ? "text-white/70" : "text-muted-foreground";
 
   return (
-    <header
-      ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || !isHome || activeMenu || menuOpen
-          ? "bg-card/95 backdrop-blur-md shadow-card border-b border-border"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto flex items-center justify-between h-[72px] py-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={siteName}
-              className="h-10 w-auto object-contain"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-lg shadow-sm">
-              M
+    <>
+      <header
+        ref={navRef}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled || !isHome || activeMenu || menuOpen
+            ? "bg-card/95 backdrop-blur-md shadow-card border-b border-border"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="container mx-auto flex items-center justify-between h-[72px] py-4">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
+            {logoUrl ? (
+              <img src={logoUrl} alt={siteName} className="h-10 w-auto object-contain" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-lg shadow-sm">
+                M
+              </div>
+            )}
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {/* About */}
+            <div
+              className="relative"
+              onMouseEnter={() => setActiveMenu("about")}
+              onMouseLeave={() => setActiveMenu(null)}
+            >
+              <button
+                className={`flex items-center gap-1 font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
+                  location.pathname.startsWith("/about") ? "text-accent font-semibold" : ""
+                }`}
+              >
+                About Us
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${chevronClass} ${
+                    activeMenu === "about" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              <MegaMenuDropdown
+                items={ABOUT_ITEMS}
+                images={[focusData, focusCommunity]}
+                isOpen={activeMenu === "about"}
+              />
             </div>
-          )}
-        </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-1">
-          {/* About */}
-          <div
-            className="relative"
-            onMouseEnter={() => handleMenuEnter("about")}
-            onMouseLeave={handleMenuLeave}
-          >
-            <button
-              className={`flex items-center gap-1 font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
-                location.pathname.startsWith("/about") ? "text-accent font-semibold" : ""
-              }`}
+            {/* Programmes */}
+            <div
+              className="relative"
+              onMouseEnter={() => setActiveMenu("programmes")}
+              onMouseLeave={() => setActiveMenu(null)}
             >
-              About Us
-              <ChevronDown
-                size={14}
-                className={`transition-transform duration-200 ${chevronClass} ${
-                  activeMenu === "about" ? "rotate-180" : ""
+              <Link
+                to="/programmes"
+                className={`flex items-center gap-1 font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
+                  location.pathname.startsWith("/programmes") ? "text-accent font-semibold" : ""
                 }`}
-              />
-            </button>
-            <MegaMenuDropdown
-              items={ABOUT_ITEMS}
-              images={[focusData, focusCommunity]}
-              isOpen={activeMenu === "about"}
-            />
-          </div>
-
-          {/* Programmes */}
-          <div
-            className="relative"
-            onMouseEnter={() => handleMenuEnter("programmes")}
-            onMouseLeave={handleMenuLeave}
-          >
-            <Link
-              to="/programmes"
-              className={`flex items-center gap-1 font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
-                location.pathname.startsWith("/programmes") ? "text-accent font-semibold" : ""
-              }`}
-            >
-              Programmes
-              <ChevronDown
-                size={14}
-                className={`transition-transform duration-200 ${chevronClass} ${
-                  activeMenu === "programmes" ? "rotate-180" : ""
-                }`}
-              />
-            </Link>
-            <MegaMenuDropdown
-              items={PROGRAMMES_ITEMS}
-              images={[focusCommunity, focusJournalism]}
-              isOpen={activeMenu === "programmes"}
-            />
-          </div>
-
-          {/* Newsroom */}
-          <div
-            className="relative"
-            onMouseEnter={() => handleMenuEnter("newsroom")}
-            onMouseLeave={handleMenuLeave}
-          >
-            <button
-              className={`flex items-center gap-1 font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
-                location.pathname.startsWith("/newsroom") ? "text-accent font-semibold" : ""
-              }`}
-            >
-              Newsroom
-              <ChevronDown
-                size={14}
-                className={`transition-transform duration-200 ${chevronClass} ${
-                  activeMenu === "newsroom" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            <MegaMenuDropdown
-              items={NEWSROOM_ITEMS}
-              images={[focusMedia, focusData]}
-              isOpen={activeMenu === "newsroom"}
-            />
-          </div>
-
-          {/* Simple links */}
-          {SIMPLE_NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              to={link.href}
-              className={`font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
-                location.pathname === link.href ? "text-accent font-semibold" : ""
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* CTA */}
-        <Link to="/contact" className="hidden lg:block btn-gold text-sm px-5 py-2.5 flex-shrink-0">
-          Get Involved
-        </Link>
-
-        {/* Mobile Animated Hamburger Toggle Button */}
-        <button
-          type="button"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((prev) => !prev)}
-          className={`lg:hidden relative z-50 p-2.5 rounded-xl transition-colors duration-200 focus:outline-none flex flex-col justify-center items-center w-11 h-11 cursor-pointer select-none ${
-            isTransparent
-              ? "text-white hover:bg-white/10 active:bg-white/20"
-              : "text-foreground hover:bg-muted active:bg-muted/80"
-          }`}
-        >
-          <div className="w-6 h-5 flex flex-col justify-between items-center relative pointer-events-none">
-            <motion.span
-              animate={menuOpen ? { rotate: 45, y: 9 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="w-6 h-0.5 bg-current rounded-full origin-center block"
-            />
-            <motion.span
-              animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="w-6 h-0.5 bg-current rounded-full block"
-            />
-            <motion.span
-              animate={menuOpen ? { rotate: -45, y: -9 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="w-6 h-0.5 bg-current rounded-full origin-center block"
-            />
-          </div>
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay & Sheet */}
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            {/* Dark Backdrop Blur Overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 top-[72px] bg-black/60 backdrop-blur-md z-40 lg:hidden"
-            />
-
-            {/* Mobile Animated Drawer Panel */}
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-x-0 top-[72px] bottom-0 z-40 lg:hidden bg-background border-t border-border shadow-2xl flex flex-col justify-between overflow-y-auto"
-            >
-              <motion.nav
-                variants={mobileMenuVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="container mx-auto px-5 py-6 flex flex-col gap-2"
               >
-                {/* About Accordion */}
-                <motion.div variants={mobileItemVariants} className="border-b border-border/50 pb-2">
-                  <button
-                    type="button"
-                    className={`flex items-center justify-between w-full font-body font-semibold text-base py-3 px-3 rounded-xl transition-colors ${
-                      mobileExpanded === "about" || location.pathname.startsWith("/about")
-                        ? "text-accent bg-accent/10"
-                        : "text-foreground hover:bg-secondary/40"
-                    }`}
-                    onClick={() =>
-                      setMobileExpanded((prev) => (prev === "about" ? null : "about"))
-                    }
-                  >
-                    <span>About Us</span>
-                    <motion.div
-                      animate={{ rotate: mobileExpanded === "about" ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown size={18} className="text-muted-foreground" />
-                    </motion.div>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {mobileExpanded === "about" && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden pl-3 pt-1 pb-1 flex flex-col gap-1 border-l-2 border-accent/40 ml-4 mt-1"
-                      >
-                        {ABOUT_ITEMS.map((item) => (
-                          <Link
-                            key={item.label}
-                            to={item.href}
-                            className={`font-body text-sm py-2.5 px-3 rounded-lg transition-colors flex items-center justify-between ${
-                              location.pathname === item.href
-                                ? "bg-accent/15 text-accent font-semibold"
-                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                            }`}
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                Programmes
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${chevronClass} ${
+                    activeMenu === "programmes" ? "rotate-180" : ""
+                  }`}
+                />
+              </Link>
+              <MegaMenuDropdown
+                items={PROGRAMMES_ITEMS}
+                images={[focusCommunity, focusJournalism]}
+                isOpen={activeMenu === "programmes"}
+              />
+            </div>
 
-                {/* Programmes Accordion */}
-                <motion.div variants={mobileItemVariants} className="border-b border-border/50 pb-2">
-                  <button
-                    type="button"
-                    className={`flex items-center justify-between w-full font-body font-semibold text-base py-3 px-3 rounded-xl transition-colors ${
-                      mobileExpanded === "programmes" || location.pathname.startsWith("/programmes")
-                        ? "text-accent bg-accent/10"
-                        : "text-foreground hover:bg-secondary/40"
-                    }`}
-                    onClick={() =>
-                      setMobileExpanded((prev) => (prev === "programmes" ? null : "programmes"))
-                    }
-                  >
-                    <span>Programmes</span>
-                    <motion.div
-                      animate={{ rotate: mobileExpanded === "programmes" ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown size={18} className="text-muted-foreground" />
-                    </motion.div>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {mobileExpanded === "programmes" && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden pl-3 pt-1 pb-1 flex flex-col gap-1 border-l-2 border-accent/40 ml-4 mt-1"
-                      >
-                        {PROGRAMMES_ITEMS.map((item) => (
-                          <Link
-                            key={item.label}
-                            to={item.href}
-                            className={`font-body text-sm py-2.5 px-3 rounded-lg transition-colors flex items-center justify-between ${
-                              location.pathname === item.href
-                                ? "bg-accent/15 text-accent font-semibold"
-                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                            }`}
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                {/* Newsroom Accordion */}
-                <motion.div variants={mobileItemVariants} className="border-b border-border/50 pb-2">
-                  <button
-                    type="button"
-                    className={`flex items-center justify-between w-full font-body font-semibold text-base py-3 px-3 rounded-xl transition-colors ${
-                      mobileExpanded === "newsroom" || location.pathname.startsWith("/newsroom")
-                        ? "text-accent bg-accent/10"
-                        : "text-foreground hover:bg-secondary/40"
-                    }`}
-                    onClick={() =>
-                      setMobileExpanded((prev) => (prev === "newsroom" ? null : "newsroom"))
-                    }
-                  >
-                    <span>Newsroom</span>
-                    <motion.div
-                      animate={{ rotate: mobileExpanded === "newsroom" ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown size={18} className="text-muted-foreground" />
-                    </motion.div>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {mobileExpanded === "newsroom" && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: "easeInOut" }}
-                        className="overflow-hidden pl-3 pt-1 pb-1 flex flex-col gap-1 border-l-2 border-accent/40 ml-4 mt-1"
-                      >
-                        {NEWSROOM_ITEMS.map((item) => (
-                          <Link
-                            key={item.label}
-                            to={item.href}
-                            className={`font-body text-sm py-2.5 px-3 rounded-lg transition-colors flex items-center justify-between ${
-                              location.pathname === item.href
-                                ? "bg-accent/15 text-accent font-semibold"
-                                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                            }`}
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                {/* Simple Nav Links */}
-                {SIMPLE_NAV_LINKS.map((link) => (
-                  <motion.div key={link.label} variants={mobileItemVariants}>
-                    <Link
-                      to={link.href}
-                      className={`font-body text-base font-semibold py-3 px-3 rounded-xl transition-colors block ${
-                        location.pathname === link.href
-                          ? "text-accent bg-accent/10"
-                          : "text-foreground hover:bg-secondary/40 hover:text-accent"
-                      }`}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.nav>
-
-              {/* Bottom Callout & CTA Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.3 }}
-                className="container mx-auto px-5 pb-8 pt-4 flex flex-col gap-4 border-t border-border/60 bg-muted/20 mt-auto"
+            {/* Newsroom */}
+            <div
+              className="relative"
+              onMouseEnter={() => setActiveMenu("newsroom")}
+              onMouseLeave={() => setActiveMenu(null)}
+            >
+              <button
+                className={`flex items-center gap-1 font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
+                  location.pathname.startsWith("/newsroom") ? "text-accent font-semibold" : ""
+                }`}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold text-accent uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles size={13} /> MADE Foundation
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Empowering Voices, Transforming Communities
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  to="/contact"
-                  className="btn-gold w-full flex items-center justify-center gap-2 py-3.5 text-base font-semibold shadow-gold"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Get Involved
-                  <ArrowRight size={18} />
-                </Link>
-              </motion.div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </header>
+                Newsroom
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-200 ${chevronClass} ${
+                    activeMenu === "newsroom" ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              <MegaMenuDropdown
+                items={NEWSROOM_ITEMS}
+                images={[focusMedia, focusData]}
+                isOpen={activeMenu === "newsroom"}
+              />
+            </div>
+
+            {/* Simple links */}
+            {SIMPLE_NAV_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                to={link.href}
+                className={`font-body text-sm font-medium px-3 py-2 rounded-md transition-colors hover:text-accent ${navTextClass} ${
+                  location.pathname === link.href ? "text-accent font-semibold" : ""
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <Link to="/contact" className="hidden lg:block btn-gold text-sm px-5 py-2.5 flex-shrink-0">
+            Get Involved
+          </Link>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className={`lg:hidden flex flex-col justify-center items-center w-11 h-11 rounded-xl transition-colors duration-150 focus:outline-none cursor-pointer ${
+              isTransparent
+                ? "text-white"
+                : "text-gray-800"
+            }`}
+          >
+            {/* Three-line icon: plain CSS, no framer-motion to avoid render bugs on mobile */}
+            <span
+              className="block w-6 h-0.5 bg-current rounded-full transition-all duration-250 origin-center"
+              style={{
+                transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none",
+              }}
+            />
+            <span
+              className="block w-6 h-0.5 bg-current rounded-full my-1.5 transition-all duration-200"
+              style={{
+                opacity: menuOpen ? 0 : 1,
+                transform: menuOpen ? "scaleX(0)" : "scaleX(1)",
+              }}
+            />
+            <span
+              className="block w-6 h-0.5 bg-current rounded-full transition-all duration-250 origin-center"
+              style={{
+                transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none",
+              }}
+            />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile menu rendered via Portal — escapes header stacking context so fixed works on iOS */}
+      <MobileMenuPortal
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        mobileExpanded={mobileExpanded}
+        setMobileExpanded={setMobileExpanded}
+        location={location}
+      />
+    </>
   );
 };
 
 export default Navbar;
-
