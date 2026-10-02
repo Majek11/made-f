@@ -35,6 +35,43 @@ interface StatCard {
   text: string;
 }
 
+const DEFAULT_SLIDES: HeroSlide[] = [
+  {
+    id: "1",
+    display_order: 1,
+    tag: "Action & Impact",
+    heading: "Empowering Communities Through Media & Dialogue",
+    sub_heading: "MADE Foundation works at the intersection of media development, advocacy, and social change across Africa.",
+    image_url: hero1,
+    is_active: true,
+  },
+  {
+    id: "2",
+    display_order: 2,
+    tag: "Journalism & Innovation",
+    heading: "Strengthening Local Voices & Public Interest News",
+    sub_heading: "Supporting independent journalists, community reporters, and digital storytellers to drive accountability.",
+    image_url: hero2,
+    is_active: true,
+  },
+  {
+    id: "3",
+    display_order: 3,
+    tag: "Policy & Inclusion",
+    heading: "Bridging Research, Policy & Youth Leadership",
+    sub_heading: "Fostering inclusive governance, gender equality, and youth digital leadership for sustainable development.",
+    image_url: hero3,
+    is_active: true,
+  },
+];
+
+const DEFAULT_STATS: StatCard[] = [
+  { value: "50+", label: "Journalists Trained", bg: STAT_BG_TEXT[0].bg, text: STAT_BG_TEXT[0].text },
+  { value: "12", label: "Community Projects", bg: STAT_BG_TEXT[1].bg, text: STAT_BG_TEXT[1].text },
+  { value: "100%", label: "Local Impact Focus", bg: STAT_BG_TEXT[2].bg, text: STAT_BG_TEXT[2].text },
+  { value: "2024", label: "Foundation Year", bg: STAT_BG_TEXT[3].bg, text: STAT_BG_TEXT[3].text },
+];
+
 const HeroSection = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 5000, stopOnInteraction: true }),
@@ -84,9 +121,9 @@ const HeroSection = () => {
     return () => { emblaApi.off("select", onSelect); };
   }, [emblaApi]);
 
-  // Use DB slides if available, else empty (page still renders without crash)
-  const activeSlides = slides;
-  const currentSlide = activeSlides[selectedIndex];
+  const activeSlides = slides.length > 0 ? slides : DEFAULT_SLIDES;
+  const activeStats = stats.length > 0 && stats.some(s => s.value || s.label) ? stats : DEFAULT_STATS;
+  const currentSlide = activeSlides[selectedIndex] || activeSlides[0];
 
   return (
     <>
@@ -223,3 +260,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
