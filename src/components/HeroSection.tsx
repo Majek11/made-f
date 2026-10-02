@@ -128,14 +128,13 @@ const HeroSection = () => {
   return (
     <>
       {/* Hero slider */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden">
+      <section className="relative min-h-[600px] lg:min-h-screen flex flex-col overflow-hidden">
         <div className="overflow-hidden absolute inset-0" ref={emblaRef}>
-          <div className="flex h-full" style={{ height: "100vh" }}>
+          <div className="flex h-full min-h-[600px] lg:min-h-screen">
             {activeSlides.map((slide, i) => (
               <div
                 key={slide.id}
-                className="relative min-w-full flex-shrink-0"
-                style={{ height: "100vh" }}
+                className="relative min-w-full flex-shrink-0 min-h-[600px] lg:min-h-screen"
               >
                 {/* Background image */}
                 <div
