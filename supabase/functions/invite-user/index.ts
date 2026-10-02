@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
 
     // Invite user via admin API
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: `${req.headers.get("origin") ?? "https://action-impact-bridge.lovable.app"}/admin`,
+      redirectTo: `${req.headers.get("origin") ?? "https://madefoundationng.org"}/admin`,
     });
 
     if (inviteError) {
