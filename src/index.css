@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ─────────────────────────────────────────────
+       MADE-F Design System — extracted from the
+       medallion seal: Obsidian Black × Metallic Gold
+    ───────────────────────────────────────────── */
+
+    /* Warm ivory page background */
+    --background: 43 22% 97%;
+    --foreground: 30 12% 10%;
+
+    --card: 43 20% 99%;
+    --card-foreground: 30 12% 10%;
+
+    --popover: 43 20% 99%;
+    --popover-foreground: 30 12% 10%;
+
+    /* PRIMARY — Obsidian (seal inner circle) */
+    --primary: 30 8% 7%;
+    --primary-foreground: 43 25% 95%;
+
+    /* ACCENT — Metallic Gold (seal outer ring) */
+    --accent: 42 76% 46%;
+    --accent-foreground: 30 8% 7%;
+
+    /* SECONDARY — Warm Parchment */
+    --secondary: 43 32% 91%;
+    --secondary-foreground: 30 12% 15%;
+
+    --muted: 43 18% 91%;
+    --muted-foreground: 30 8% 44%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 43 25% 95%;
+
+    --border: 38 20% 86%;
+    --input: 38 20% 86%;
+    --ring: 42 76% 46%;
+
+    --radius: 0.75rem;
+
+    /* ── Custom palette tokens ── */
+
+    /* Backgrounds */
+    --cream: 43 22% 97%;
+    --cream-dark: 42 20% 91%;
+
+    /* Gold scale — from logo ring */
+    --gold: 42 76% 46%;
+    --gold-bright: 43 88% 62%;   /* ring highlight */
+    --gold-mid: 42 76% 46%;      /* ring body */
+    --gold-deep: 38 68% 32%;     /* ring shadow */
+    --gold-light: 43 78% 93%;    /* very light gold tint */
+
+    /* Obsidian / Charcoal scale — from seal face */
+    --obsidian: 30 8% 7%;
+    --charcoal: 30 10% 14%;      /* slightly lifted obsidian */
+    --charcoal-mid: 30 8% 20%;
+
+    /* Keep for backward compat — now repurposed to champagne */
+    --green-light: 43 38% 88%;
+
+    /* ── Gradients ── */
+    /* Hero overlay: deep obsidian left-to-right with gold warmth */
+    --gradient-hero: linear-gradient(
+      to right,
+      hsl(30 8% 4% / 0.88),
+      hsl(38 28% 8% / 0.52)
+    );
+    /* Section gradient: obsidian to charcoal */
+    --gradient-section: linear-gradient(
+      135deg,
+      hsl(var(--obsidian)),
+      hsl(var(--charcoal))
+    );
+    /* Metallic gold shimmer */
+    --gradient-gold: linear-gradient(
+      135deg,
+      hsl(var(--gold-bright)),
+      hsl(var(--gold-mid)),
+      hsl(var(--gold-deep))
+    );
+
+    /* ── Shadows ── */
+    --shadow-card: 0 4px 24px -4px hsl(30 8% 7% / 0.10);
+    --shadow-hover: 0 10px 36px -6px hsl(30 8% 7% / 0.22);
+    --shadow-gold: 0 8px 28px hsl(42 76% 46% / 0.32);
+
+    /* ── Sidebar (admin) ── */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Gold italic accent — the signature text treatment */
+  .text-italic-accent {
+    font-style: italic;
+    color: hsl(var(--accent));
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* Section tag — small gold pill */
+  .section-tag {
+    @apply inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Animations */
+  .animate-fade-up {
+    animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .animate-fade-in-delay {
+    animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in-delay-2 {
+    animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+    opacity: 0;
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 3s infinite;
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Metallic gold shimmer utility */
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+    background-size: 200% 200%;
+    transition: background-position 0.6s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-8px) rotate(0.5deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(212, 175, 55, 0);
+  }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@layer components {
+  /* Primary button — obsidian black */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm tracking-wide transition-all duration-300;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn-primary:hover {
+    background: hsl(var(--charcoal));
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 28px hsl(var(--obsidian) / 0.45);
+  }
+
+  /* Outline button */
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm tracking-wide border-2 transition-all duration-300;
+    border-color: hsl(var(--foreground));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn-outline:hover {
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Gold CTA button — the medallion accent */
+  .btn-gold {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm tracking-wide transition-all duration-300;
+    background: var(--gradient-gold);
+    background-size: 200% 200%;
+    color: hsl(var(--obsidian));
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn-gold:hover {
+    background-position: 100% 100%;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-gold);
+  }
+}

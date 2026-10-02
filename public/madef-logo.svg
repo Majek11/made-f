@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E08F" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#997A15" />
+    </linearGradient>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F1D1B" />
+      <stop offset="100%" stop-color="#0D0C0B" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background Circle Seal -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg-grad)" stroke="url(#gold-grad)" stroke-width="12" filter="url(#shadow)" />
+
+  <!-- Outer Ring Detail -->
+  <circle cx="256" cy="256" r="218" fill="none" stroke="url(#gold-grad)" stroke-width="2" stroke-dasharray="8 6" opacity="0.6" />
+
+  <!-- Stylized Letter 'M' -->
+  <path d="M 145 350 L 145 162 L 205 162 L 256 265 L 307 162 L 367 162 L 367 350 L 322 350 L 322 225 L 273 320 L 239 320 L 190 225 L 190 350 Z" fill="url(#gold-grad)" />
+
+  <!-- Accent Star/Spark Dot -->
+  <circle cx="367" cy="140" r="14" fill="#F3E08F" />
+</svg>
