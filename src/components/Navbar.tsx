@@ -313,28 +313,28 @@ const Navbar = () => {
           type="button"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
-          onClick={() => setMenuOpen(!menuOpen)}
-          className={`lg:hidden relative z-50 p-2.5 rounded-xl transition-colors duration-200 focus:outline-none flex flex-col justify-center items-center w-10 h-10 ${
+          onClick={() => setMenuOpen((prev) => !prev)}
+          className={`lg:hidden relative z-50 p-2.5 rounded-xl transition-colors duration-200 focus:outline-none flex flex-col justify-center items-center w-11 h-11 cursor-pointer select-none ${
             isTransparent
               ? "text-white hover:bg-white/10 active:bg-white/20"
               : "text-foreground hover:bg-muted active:bg-muted/80"
           }`}
         >
-          <div className="w-5 h-4 flex flex-col justify-between items-center relative">
+          <div className="w-6 h-5 flex flex-col justify-between items-center relative pointer-events-none">
             <motion.span
-              animate={menuOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
+              animate={menuOpen ? { rotate: 45, y: 9 } : { rotate: 0, y: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="w-5 h-0.5 bg-current rounded-full origin-center block"
+              className="w-6 h-0.5 bg-current rounded-full origin-center block"
             />
             <motion.span
               animate={menuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="w-5 h-0.5 bg-current rounded-full block"
+              className="w-6 h-0.5 bg-current rounded-full block"
             />
             <motion.span
-              animate={menuOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
+              animate={menuOpen ? { rotate: -45, y: -9 } : { rotate: 0, y: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="w-5 h-0.5 bg-current rounded-full origin-center block"
+              className="w-6 h-0.5 bg-current rounded-full origin-center block"
             />
           </div>
         </button>
@@ -349,18 +349,18 @@ const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 top-[72px] bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 top-[72px] bg-black/60 backdrop-blur-md z-40 lg:hidden"
             />
 
             {/* Mobile Animated Drawer Panel */}
             <motion.div
-              initial={{ opacity: 0, y: -16 }}
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
+              exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-x-0 top-[72px] bottom-0 z-40 lg:hidden bg-card/98 backdrop-blur-xl border-t border-border shadow-2xl flex flex-col justify-between overflow-y-auto"
+              className="fixed inset-x-0 top-[72px] bottom-0 z-40 lg:hidden bg-background border-t border-border shadow-2xl flex flex-col justify-between overflow-y-auto"
             >
               <motion.nav
                 variants={mobileMenuVariants}
@@ -379,7 +379,7 @@ const Navbar = () => {
                         : "text-foreground hover:bg-secondary/40"
                     }`}
                     onClick={() =>
-                      setMobileExpanded(mobileExpanded === "about" ? null : "about")
+                      setMobileExpanded((prev) => (prev === "about" ? null : "about"))
                     }
                   >
                     <span>About Us</span>
@@ -428,7 +428,7 @@ const Navbar = () => {
                         : "text-foreground hover:bg-secondary/40"
                     }`}
                     onClick={() =>
-                      setMobileExpanded(mobileExpanded === "programmes" ? null : "programmes")
+                      setMobileExpanded((prev) => (prev === "programmes" ? null : "programmes"))
                     }
                   >
                     <span>Programmes</span>
@@ -477,7 +477,7 @@ const Navbar = () => {
                         : "text-foreground hover:bg-secondary/40"
                     }`}
                     onClick={() =>
-                      setMobileExpanded(mobileExpanded === "newsroom" ? null : "newsroom")
+                      setMobileExpanded((prev) => (prev === "newsroom" ? null : "newsroom"))
                     }
                   >
                     <span>Newsroom</span>
