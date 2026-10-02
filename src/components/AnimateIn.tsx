@@ -1,5 +1,4 @@
-import { useRef, useState, useEffect } from "react";
-import { motion, useInView, type Variant } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type Direction = "up" | "down" | "left" | "right" | "none";
@@ -14,11 +13,11 @@ interface AnimateInProps {
 }
 
 const offsets: Record<Direction, { x?: number; y?: number }> = {
-  up: { y: 24 },
-  down: { y: -24 },
-  left: { x: -24 },
-  right: { x: 24 },
-  none: {},
+  up:    { y: 20 },
+  down:  { y: -20 },
+  left:  { x: -20 },
+  right: { x: 20 },
+  none:  {},
 };
 
 export function AnimateIn({
@@ -29,31 +28,15 @@ export function AnimateIn({
   direction = "up",
   threshold = 0.01,
 }: AnimateInProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: threshold });
-  const [shouldShow, setShouldShow] = useState(false);
-
-  useEffect(() => {
-    if (inView) {
-      setShouldShow(true);
-    }
-  }, [inView]);
-
-  // Safety fallback: ensure content becomes visible after mount even if IntersectionObserver delays on mobile
-  useEffect(() => {
-    const timer = setTimeout(() => setShouldShow(true), 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const hidden: Variant = { opacity: 0, ...offsets[direction] };
-  const visible: Variant = { opacity: 1, x: 0, y: 0 };
+  const hidden = { opacity: 0, ...offsets[direction] };
+  const visible = { opacity: 1, x: 0, y: 0 };
 
   return (
     <motion.div
-      ref={ref}
       className={cn(className)}
       initial={hidden}
-      animate={shouldShow ? visible : hidden}
+      whileInView={visible}
+      viewport={{ once: true, amount: threshold, margin: "0px 0px -40px 0px" }}
       transition={{
         duration,
         delay,
@@ -64,5 +47,3 @@ export function AnimateIn({
     </motion.div>
   );
 }
-
-

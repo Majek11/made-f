@@ -174,7 +174,7 @@ const Index = () => {
   const activeNewsItems = newsItems.length > 0 ? newsItems : DEFAULT_NEWS_ITEMS;
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
 
