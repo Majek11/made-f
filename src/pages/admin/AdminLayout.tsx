@@ -62,9 +62,11 @@ const AdminLayout = () => {
         {/* Brand */}
         <div className="p-6 border-b border-primary-foreground/10">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center text-foreground font-display font-bold text-base">
-              M
-            </div>
+            <img
+              src="/madef-logo.png"
+              alt="MADE-F Logo"
+              className="w-10 h-10 rounded-full object-cover shadow-sm transition-transform group-hover:scale-105"
+            />
             <div>
               <span className="font-display font-bold text-base text-primary-foreground block">MADE-F</span>
               <span className="font-body text-xs text-primary-foreground/50">Admin Portal</span>

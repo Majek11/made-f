@@ -42,9 +42,11 @@ const AdminLogin = () => {
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-accent items-center justify-center mb-4 shadow-lg">
-            <span className="font-display font-bold text-2xl text-foreground">M</span>
-          </div>
+          <img
+            src="/madef-logo.png"
+            alt="MADE-F Logo"
+            className="w-20 h-20 rounded-full object-cover mx-auto mb-4 shadow-xl border-2 border-accent/40"
+          />
           <h1 className="font-display text-3xl font-bold text-primary-foreground">Admin Portal</h1>
           <p className="font-body text-primary-foreground/60 text-sm mt-1">MADE Foundation Content Management</p>
         </div>

@@ -318,13 +318,23 @@ const Navbar = () => {
         <div className="container mx-auto flex items-center justify-between h-[72px] py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-            {logoUrl ? (
-              <img src={logoUrl} alt={siteName} className="h-10 w-auto object-contain" />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-display font-bold text-lg shadow-sm">
-                M
-              </div>
-            )}
+            <img
+              src={logoUrl || "/madef-logo.png"}
+              alt={siteName}
+              className="h-11 w-11 rounded-full object-cover shadow-md transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="hidden sm:flex flex-col">
+              <span className={`font-display font-bold text-base md:text-lg leading-tight tracking-tight transition-colors ${
+                isTransparent ? "text-white" : "text-foreground"
+              }`}>
+                MADE-F
+              </span>
+              <span className={`font-body text-[9px] md:text-[10px] tracking-wider uppercase transition-colors ${
+                isTransparent ? "text-white/70" : "text-muted-foreground"
+              }`}>
+                Media Action &amp; Development
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}

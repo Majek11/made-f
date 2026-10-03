@@ -145,13 +145,15 @@ const FooterSection = () => {
         <div className="grid md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div>
-            <Link to="/" className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-display font-bold text-lg">
-                M
-              </div>
+            <Link to="/" className="flex items-center gap-3 mb-5 group">
+              <img
+                src="/madef-logo.png"
+                alt="MADE-F Logo"
+                className="w-12 h-12 rounded-full object-cover shadow-md transition-transform duration-300 group-hover:scale-105"
+              />
               <div>
-                <p className="font-display font-bold text-lg leading-tight">MADE-F</p>
-                <p className="text-xs text-white/50 font-body">Media Action & Development</p>
+                <p className="font-display font-bold text-lg leading-tight text-primary-foreground">MADE-F</p>
+                <p className="text-xs text-white/50 font-body">Media Action &amp; Development</p>
               </div>
             </Link>
             <p className="font-body text-sm text-white/60 leading-relaxed mb-6">
