@@ -146,7 +146,12 @@ const BlogDetail = () => {
                 {staticPost.sections.map((section, i) => (
                   <div key={i}>
                     <h2 className="font-display text-2xl font-bold text-foreground mb-4 leading-snug">{section.heading}</h2>
-                    <p className="font-body text-foreground/70 leading-relaxed">{section.body}</p>
+                    <p className="font-body text-foreground/70 leading-relaxed whitespace-pre-line">{section.body}</p>
+                    {section.image && (
+                      <div className="my-6 rounded-2xl overflow-hidden shadow-md border border-border">
+                        <img src={section.image} alt={section.heading} className="w-full h-auto object-cover" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

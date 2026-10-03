@@ -3,6 +3,10 @@ import focusCommunity from "@/assets/focus-community.jpg";
 import focusData from "@/assets/focus-data.jpg";
 import focusMedia from "@/assets/focus-media.jpg";
 
+import unilagDhmCover from "/uploads/unilag-dhm-awareness-1.jpg";
+import unilagDhmImg2 from "/uploads/unilag-dhm-awareness-2.jpg";
+import unilagDhmImg3 from "/uploads/unilag-dhm-awareness-3.jpg";
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -14,11 +18,50 @@ export interface BlogPost {
   tag: string;
   image: string;
   content: string; // HTML-free markdown-style string rendered as paragraphs
-  sections: { heading: string; body: string }[];
+  sections: { heading: string; body: string; image?: string }[];
   featured?: boolean;
 }
 
 export const BLOG_POSTS: BlogPost[] = [
+  {
+    slug: "unilag-students-donor-human-milk-awareness-world-breastfeeding-week",
+    title: "From Classroom Learning to Community Impact: UNILAG Students Champion Donor Human Milk Awareness During World Breastfeeding Week",
+    excerpt:
+      "In support of World Breastfeeding Week 2026, Mass Communication students from the University of Lagos conducted a public sensitisation campaign on Donor Human Milk (DHM) at Gbagada General Hospital.",
+    author: "Bayo Salau",
+    authorRole: "Report / Photos: Michael Ike-Ossai",
+    date: "August 7, 2026",
+    readTime: "4 min read",
+    tag: "Community",
+    image: unilagDhmCover,
+    featured: true,
+    content:
+      "In support of the goals of the 2026 World Breastfeeding Week and to raise awareness about the importance of breastfeeding, students of the Department of Mass Communication, Faculty of Communication and Media Studies, University of Lagos (UNILAG), have taken classroom learning into the community through a public sensitisation campaign on Donor Human Milk (DHM).",
+    sections: [
+      {
+        heading: "Bridging Experiential Learning and Maternal Health",
+        body: "The initiative reflects the University's commitment to experiential learning, providing students with the opportunity to apply their communication skills to address real societal issues while promoting improved maternal and child health outcomes.\n\nObserved annually from August 1 to 7, World Breastfeeding Week promotes breastfeeding as the foundation for giving every child a healthy start in life. This year's theme, 'Prioritise Breastfeeding: Create Sustainable Support Systems', calls for stronger support systems and increased public awareness to ensure every child has access to optimal nutrition from birth.",
+        image: unilagDhmImg2,
+      },
+      {
+        heading: "Community Outreach at Gbagada General Hospital",
+        body: "As part of the campaign, Group 1 students visited the breastfeeding clinic at Gbagada General Hospital, Lagos, where they engaged more than fifty (50) breastfeeding mothers in discussions on the importance of Donor Human Milk, particularly for premature and medically vulnerable babies.\n\nThe outreach was conducted as part of their Message Design (MAS 422) campaign project under the supervision of Professor Abigail Ndisika-Ogwezzy, Director of the Institute of Continuing Education (ICE), UNILAG, and Dr. Babatunde Faustino.",
+      },
+      {
+        heading: "Demystifying Donor Human Milk & MilkBank Nigeria",
+        body: "Responding to their concerns, the students explained that Donor Human Milk is voluntarily donated by healthy lactating mothers and undergoes rigorous screening, pasteurisation, and safe storage before being provided to eligible infants. They also informed participants that MilkBank Nigeria, located in Isolo, Lagos, operates the country's human milk bank, supplying safe donor breast milk to babies whose mothers are unable to breastfeed.\n\nRepresenting the group were Ayobami Olasupo Christian, Oyebamiji Dorcas Oluwadamilola, Adetoyinbo Serah Ibukun, and Ebhomien Favour Osahon, who worked alongside healthcare professionals to educate mothers on the benefits of Donor Human Milk. They highlighted its role in reducing infections, improving the survival of premature babies, and supporting healthy growth and brain development.",
+        image: unilagDhmImg3,
+      },
+      {
+        heading: "Collaborative Support & Community Engagement",
+        body: "The students noted that the enthusiasm and thoughtful questions from participants underscored the need for sustained public education on Donor Human Milk and its role in improving newborn health outcomes across communities.\n\nAlso supporting the campaign was the Director of Dietetics and Nutrition at Gbagada General Hospital, Mrs. Kuti-Bamiro, who encouraged exclusive breastfeeding and reinforced the day's message by teaching participants an educational song highlighting the benefits of breastfeeding and Donor Human Milk.",
+      },
+      {
+        heading: "Communication as a Tool for Development",
+        body: "The outreach formed part of the requirements for the Message Design (MAS 422) course for the 2025/2026 academic session. Beyond fulfilling an academic requirement, it demonstrated how the University of Lagos continues to prepare students to use communication as a tool for development, empowering them to make meaningful contributions to their communities.\n\nThe campaign concluded with a simple but powerful message: every baby deserves the best possible start in life, and informed communities play a vital role in making that possible.\n\nReport: Bayo Salau | Photographs: Michael Ike-Ossai",
+      },
+    ],
+  },
   {
     slug: "community-journalism-reshaping-accountability",
     title: "How Community Journalism is Reshaping Accountability in Rural Nigeria",
@@ -30,7 +73,7 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: "6 min read",
     tag: "Journalism",
     image: focusJournalism,
-    featured: true,
+    featured: false,
     content:
       "In many parts of rural Nigeria, the closest a community gets to journalism is a rumour passed between neighbours at the market, or a brief mention on a radio station broadcasting from a distant state capital. Local government councils spend public funds with little scrutiny. Health workers abandon their posts with no consequences. Infrastructure projects stall indefinitely — and nobody writes about it.",
     sections: [
